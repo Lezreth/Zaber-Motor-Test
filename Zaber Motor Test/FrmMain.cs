@@ -98,7 +98,15 @@ namespace ZaberMotorTest
             BtnConnect.Text = Properties.Resources.Disconnect;
             LstPorts.Enabled = false;
 
-            PortControl = new ZaberPortControl(LstPorts.SelectedItem.ToString(), true);
+            try
+            { PortControl = new ZaberPortControl(LstPorts.SelectedItem.ToString(), true); }
+            catch (Exception e)
+            {
+                BtnConnect.Text = Properties.Resources.Connect;
+                LstPorts.Enabled = true;
+                _ = MessageBox.Show("Could not connect to the specified port." + Environment.NewLine + Environment.NewLine + "Error Message:" + Environment.NewLine + e);
+                return;
+            }
 
             _ = LstLog.Items.Add("----------");
             _ = LstLog.Items.Add("Connected to " + LstPorts.SelectedItem);

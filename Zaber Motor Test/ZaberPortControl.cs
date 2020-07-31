@@ -116,7 +116,7 @@ namespace ZaberMotorTest
                 AsciiMotors = PortConnectionAscii.DetectDevices().ToList();
                 Library = LibraryType.ASCII;
             }
-            catch (ConnectionFailedException)
+            catch (Exception)
             {
                 //  ASCII motor not connected to specified port, try looking for a binary motor
                 try
@@ -125,7 +125,7 @@ namespace ZaberMotorTest
                     BinaryMotors = PortConnectionBinary.DetectDevices().ToList();
                     Library = LibraryType.Binary;
                 }
-                catch (ConnectionFailedException)
+                catch (Exception)
                 { throw; }
             }
         }
