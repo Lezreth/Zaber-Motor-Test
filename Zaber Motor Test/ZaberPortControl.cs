@@ -118,6 +118,8 @@ namespace ZaberMotorTest
             }
             catch (Exception)
             {
+                PortConnectionAscii.Close();
+
                 //  ASCII motor not connected to specified port, try looking for a binary motor
                 try
                 {
@@ -126,7 +128,10 @@ namespace ZaberMotorTest
                     Library = LibraryType.Binary;
                 }
                 catch (Exception)
-                { throw; }
+                {
+                    PortConnectionBinary.Close();
+                    throw;
+                }
             }
         }
 
@@ -239,6 +244,7 @@ namespace ZaberMotorTest
         /// <returns>Null if the axis was moved successfully, or the error that happened when attempting to move the axis.</returns>
         public MotionLibException MoveMotor(int MotorID, int AxisID, double Position, MoveMethod Method, Units unit = Units.Native, bool WaitUntilIdle = true)
         {
+            if (Library == LibraryType.Binary) { return MoveMotor(MotorID, Position, Method, unit, WaitUntilIdle); }
             if (MotorID < 0 || MotorID >= AsciiMotors.Count) { return new MotionLibException(Properties.Resources.MotorOutOfRange); }
             if (AxisID < 1 || AxisID > AsciiMotors[MotorID].AxisCount) { return new MotionLibException(Properties.Resources.AxisOutOfRange); }
 
@@ -293,6 +299,7 @@ namespace ZaberMotorTest
         /// <returns>Object that contains the task for the move and any exception messages returned from the motor.</returns>
         public MotorReturn MoveMotorAsync(int MotorID, int AxisID, double Position, MoveMethod Method, Units unit = Units.Native, bool WaitUntilIdle = true)
         {
+            if (Library == LibraryType.Binary) { return MoveMotorAsync(MotorID, Position, Method, unit, WaitUntilIdle); }
             if (MotorID < 0 || MotorID >= AsciiMotors.Count) { return new MotorReturn(new MotionLibException(Properties.Resources.MotorOutOfRange)); }
             if (AxisID < 1 || AxisID > AsciiMotors[MotorID].AxisCount) { return new MotorReturn(new MotionLibException(Properties.Resources.AxisOutOfRange)); }
 
@@ -316,7 +323,10 @@ namespace ZaberMotorTest
         /// <returns>Number of selected axes the selected motor has.</returns>
         public int AxisCount(int MotorID)
         {
-            return AsciiMotors[MotorID].AxisCount;
+            if (Library == LibraryType.ASCII)
+            { return AsciiMotors[MotorID].AxisCount; }
+
+            return 0;
         }
 
         #endregion

@@ -120,12 +120,12 @@ namespace ZaberMotorTest
             for (int i = 0; i < PortControl.MotorCount; i++)
             {
                 _ = LstLog.Items.Add("Homing all axes for motor " + i + "...");
-                PortControl.HomeAllAxes(i);
+                PortControl.Home(i);
                 LstLog.Items[LstLog.Items.Count - 1] += "Done";
             }
 
-            NumMotorID.Value = 0;
-            NumAxisID.Value = 1;
+            NumMotorID.Value = 1 <= NumMotorID.Maximum ? 1 : NumMotorID.Maximum;
+            NumAxisID.Value = 1 <= NumAxisID.Maximum ? 1 : NumAxisID.Maximum;
             GrpMoveMotor.Enabled = true;
         }
 
@@ -241,15 +241,25 @@ namespace ZaberMotorTest
 
         private void BtnHomeAxis_Click(object sender, EventArgs e)
         {
-            _ = LstLog.Items.Add("Homing axis " + (int)NumAxisID.Value + " for motor " + (int)NumMotorID.Value + "...");
-            PortControl.HomeAxis((int)NumMotorID.Value, (int)NumAxisID.Value);
+            if (PortControl.Library == ZaberPortControl.LibraryType.ASCII)
+            { _ = LstLog.Items.Add("Homing axis " + (int)NumAxisID.Value + " for motor " + (int)NumMotorID.Value + "..."); }
+            else
+            { _ = LstLog.Items.Add("Homing motor " + (int)NumMotorID.Value + "..."); }
+
+            PortControl.Home((int)NumMotorID.Value, (int)NumAxisID.Value);
             LstLog.Items[LstLog.Items.Count - 1] += "Done";
         }
 
         private void BtnHomeAll_Click(object sender, EventArgs e)
         {
-            _ = LstLog.Items.Add("Homing all axes for motor " + (int)NumMotorID.Value + "...");
-            PortControl.HomeAllAxes((int)NumMotorID.Value);
+            if (PortControl.Library == ZaberPortControl.LibraryType.ASCII)
+            {
+                _ = LstLog.Items.Add("Homing all axes for motor " + (int)NumMotorID.Value + "...");
+                PortControl.HomeAllAxes((int)NumMotorID.Value);
+            }
+            else
+            { PortControl.Home((int)NumMotorID.Value, (int)NumAxisID.Value); }
+
             LstLog.Items[LstLog.Items.Count - 1] += "Done";
         }
 
